@@ -53,9 +53,10 @@ let app = new Vue ({
       return this.variants[this.selectedVariant].variantQuantity
     },
     sale() {
-      if (onSale) {
-        return this.brand + ' ' + this.product + ' ' + this.onSale
+      if (this.onSale) {
+        return this.brand + ' ' + this.product + ' are on sale'
       }
+        return this.brand + ' ' + this.product + ' are not on sale'
     }
   }
 })
