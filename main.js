@@ -1,6 +1,3 @@
-/* Now, we don't want all of our data, methods, computed properties living in the root instance of Vue.
-** Over time, it will become unmanageable. This gives rise to Components
-*/
 
 Vue.component('product', {
   props: {
@@ -10,119 +7,114 @@ Vue.component('product', {
     }
   },
   template: `
-  <div class="product">
+   <div class="product">
+        
       <div class="product-image">
-        <!--Data binding. Can use v-bind: for long-->
-        <img :src="image" :alt="altText" />
-        <a :href="link"></a>
+        <img :src="image" />
       </div>
 
       <div class="product-info">
-        <h1>{{ title }}</h1>
-        <p>{{ description }}</p>
-        <!--Conditional rendering-->
-        <p v-if="instock">In Stock</p>
-        <p v-else>Out of Stock</p>
-        <ul>
-          <li v-for="detail in details">{{ detail }}</li>
-        </ul>
-        <div class="color-box"
-             v-for="(variant, index) in variants" 
-             :key="variant.variantId"
-             :style="{ backgroundColor: variant.variantColor }"
-             @mouseover="updateProduct(index)"
-             ></div>
-        <ul v-for="size in sizes">
-          <li>{{ size }}</li>
-        </ul>
-        <p>Shipping: {{ shipping }}</p>
-      </div>
+          <h1>{{ product }}</h1>
+          <p v-if="inStock">In Stock</p>
+          <p v-else>Out of Stock</p>
+          <p>Shipping: {{ shipping }}</p>
 
-      <div class="cart">
-        <p>Cart ({{ Cart }})</p>
-      </div>
-      <!--Shorthand for v-on is @-->
-      <button v-on:click="addToCart" 
-              :disabled="!inStock"
-              :class="{ disabledButton: !inStock }"
-              >Add to cart</button>
-      <button v-on:click="removeFromCart"
-              :disabled="cart"
-              :class="{ disabledButton: cart }"
-              >Remove from cart</button>
-  </div>
-  `,
+          <ul>
+            <li v-for="detail in details">{{ detail }}</li>
+          </ul>
+
+          <div class="color-box"
+               v-for="(variant, index) in variants" 
+               :key="variant.variantId"
+               :style="{ backgroundColor: variant.variantColor }"
+               @mouseover="updateProduct(index)"
+               >
+          </div> 
+
+          <button v-on:click="addToCart" 
+            :disabled="!inStock"
+            :class="{ disabledButton: !inStock }"
+            >
+          Add to cart
+          </button>
+
+          <button @click="removeFromCart" 
+            >
+          Remove from cart
+          </button>
+
+       </div>  
+    
+    </div>
+   `,
   data() {
     return {
-    product: 'Socks',
-    brand: 'Vue Mastery',
-    description: 'Warm fuzzy socks for the cold weather',
-    altText: "A pair of socks",
-    link: "https://www.vuemastery.com/courses",
-    inventory: 150,
-    details: ["80% cotton", "20% polyester", "Gender-neutral"],
-    variants: [
-      {
-        variantId: 2234,
-        variantColor: "green",
-        variantImage: "./assets/images/vmSocks-green.jpg",
-        variantQuantity: 20,
+        product: 'Socks',
+        brand: 'Vue Mastery',
+        selectedVariant: 0,
+        details: ['80% cotton', '20% polyester', 'Gender-neutral'],
+        variants: [
+          {
+            variantId: 2234,
+            variantColor: 'green',
+            variantImage: 'https://www.vuemastery.com/images/challenges/vmSocks-green-onWhite.jpg',
+            variantQuantity: 10     
+          },
+          {
+            variantId: 2235,
+            variantColor: 'blue',
+            variantImage: 'https://www.vuemastery.com/images/challenges/vmSocks-blue-onWhite.jpg',
+            variantQuantity: 0     
+          }
+        ]
+    }
+  },
+    methods: {
+      addToCart: function() {
+          this.$emit('add-to-cart', this.variants[this.selectedVariant].variantId)
       },
-      {
-        variantId: 2235,
-        variantColor: "blue",
-        variantImage: "./assets/images/vmSocks-blue.jpg",
-        variantQuantity: 2,
+      updateProduct: function(index) {  
+          this.selectedVariant = index
+      },
+      removeFromCart: function() {
+           this.$emit('remove-from-cart', this.variants[this.selectedVariant].variantId)
       }
-    ],
-    sizes: [38, 39, 40, 41, 42, 43, 44, 45],
-    cart: 0,
-    selectedVariant: 0,
-    onSale: true,
+    },
+    computed: {
+        title() {
+            return this.brand + ' ' + this.product  
+        },
+        image(){
+            return this.variants[this.selectedVariant].variantImage
+        },
+        inStock(){
+            return this.variants[this.selectedVariant].variantQuantity
+        },
+        shipping() {
+          if (this.premium) {
+            return "Free"
+          }
+            return 2.99
+        }
     }
-  },
-  methods: {
-    addToCart() {
-      this.cart += 1;
-    },
-    removeFromCart() {
-      this.cart -= 1;
-      if (cart === 0) {
-        cart = 0;
-      }
-    },
-    updateProduct(index) {
-      this.selectedVariant = index;
-    }
-  },
-  computed: {
-    title() {
-      return this.brand + ' ' + this.product
-    },
-    image() {
-      return this.variants[this.selectedVariant].variantImage
-    },
-    inStock() {
-      return this.variants[this.selectedVariant].variantQuantity
-    },
-    sale() {
-      if (this.onSale) {
-        return this.brand + ' ' + this.product + ' are on sale'
-      }
-        return this.brand + ' ' + this.product + ' are not on sale'
-    },
-    shipping() {
-      if(this.premium) {
-        return 'Free'
-      }
-      return 9.99
-    }
-  }
 })
 
-let app = new Vue ({
-  el: '#app',
-  data: {
-    premium: true
-  }
+var app = new Vue({
+    el: '#app',
+    data: {
+      premium: true,
+      cart: []
+    },
+    methods: {
+      updateCart(id) {
+        this.cart.push(id)
+      },
+      removeItem(id) {
+        for(var i = this.cart.length - 1; i >= 0; i--) {
+          if (this.cart[i] === id) {
+             this.cart.splice(i, 1);
+          }
+        }
+      }
+    }
 })
