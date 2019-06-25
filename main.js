@@ -21,7 +21,11 @@ Vue.component('product', {
             <p v-if="inStock">In Stock</p>
             <p v-else>Out of Stock</p>
   
-            <info-tabs :shipping="shipping" :details="details"></info-tabs>
+            <info-tabs 
+            :shipping="shipping" 
+            :details="details"
+            >
+            </info-tabs>
   
             <div class="color-box"
                  v-for="(variant, index) in variants" 
