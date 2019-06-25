@@ -44,7 +44,19 @@ Vue.component('product', {
           Remove from cart
           </button>
 
-       </div>  
+       </div>
+
+       <div>
+        <h2>Reviews</h2>
+        <p v-if="!reviews.length">There are no reviews yet.</p>
+        <ul>
+          <li v-for="review in reviews">
+            <p>{{ review.name }}</p>
+            <p>Rating: {{ review.rating }}</p>
+            <p>{{ review.review }}</p>
+          </li>
+        </ul>
+       </div>
     
     </div>
    `,
@@ -67,7 +79,8 @@ Vue.component('product', {
             variantImage: './assets/images/vmSocks-blue.jpg',
             variantQuantity: 0     
           }
-        ]
+        ],
+        reviews: []
     }
   },
     methods: {
@@ -96,6 +109,11 @@ Vue.component('product', {
             return "Free"
           }
             return 2.99
+        },
+        mounted() {
+          eventBus.$on('review-submitted', productReview => {
+            this.reviews.push(productReview)
+          })
         }
     }
 })
