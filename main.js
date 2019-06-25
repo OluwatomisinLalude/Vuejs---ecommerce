@@ -14,17 +14,15 @@ Vue.component('product', {
       <div class="product-image">
         <!--Data binding. Can use v-bind: for long-->
         <img :src="image" :alt="altText" />
-        <a :href="link">
+        <a :href="link"></a>
       </div>
 
       <div class="product-info">
-        <!--Expression that takes data from Vue Instance-->
         <h1>{{ title }}</h1>
         <p>{{ description }}</p>
         <!--Conditional rendering-->
-        <p v-if="inventory > 10>">In Stock</p>
-        <p v-else-if="inventory <= 10 && inventory > 0">Almost sold out</p>
-        <p v-else  :class="{ lineThrough }">Out of Stock</p>
+        <p v-if="instock">In Stock</p>
+        <p v-else>Out of Stock</p>
         <ul>
           <li v-for="detail in details">{{ detail }}</li>
         </ul>
