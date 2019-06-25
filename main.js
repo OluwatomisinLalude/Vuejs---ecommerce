@@ -2,7 +2,7 @@
 ** Over time, it will become unmanageable. This gives rise to Components
 */
 
-Vue.component('Products', {
+Vue.component('product', {
   props: {
     premium: {
       type: Boolean,
